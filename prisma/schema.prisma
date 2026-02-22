@@ -1,0 +1,134 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum role {
+  ADMIN
+  EMPLOYEE
+  CLIENT
+}
+
+enum serviceStatus {
+  ACCEPTED
+  REJECTED
+  PENDING
+}
+
+enum projectStatus {
+  PLANNING
+  DEVELOPMENT
+  TESTING
+  DEPLOYMENT
+  DELIVERED
+}
+
+model User {
+  id        String   @id @default(uuid())
+  role      role
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  client          Client[]
+  employee        Employee[]
+  messageReceived Message[]  @relation("receiver")
+  messageSent     Message[]  @relation("sender")
+}
+
+model Client {
+  id      String @id @default(uuid())
+  name    String
+  user_id String @unique
+  phone   String
+  company String
+
+  user       User             @relation(fields: [user_id], references: [id])
+  projects   Project[]
+  serviceReq ServiceRequest[]
+}
+
+model Employee {
+  id         String   @id @default(uuid())
+  name       String
+  user_id    String   @unique
+  phone      String
+  joinedDate DateTime @default(now()) @map("joined_date")
+
+  user             User              @relation(fields: [user_id], references: [id])
+  assignedProjects AssignedProject[]
+}
+
+model Project {
+  id               String        @id @default(uuid())
+  clientId         String
+  status           projectStatus
+  name             String
+  description      String
+  createdAt        DateTime      @default(now()) @map("created_at")
+  serviceRequestId String?       @unique @map("service_request_id")
+
+  client           Client            @relation(fields: [clientId], references: [id])
+  assignedProjects AssignedProject[]
+  serviceRequest   ServiceRequest?   @relation(fields: [serviceRequestId], references: [id])
+}
+
+model AssignedProject {
+  id         String   @id @default(uuid())
+  projectId  String
+  employeeId String
+  createdAt  DateTime @default(now())
+
+  project   Project  @relation(fields: [projectId], references: [id])
+  employees Employee @relation(fields: [employeeId], references: [id])
+
+  @@unique([projectId, employeeId])
+}
+
+model Service {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  serviceRequest ServiceRequest[]
+}
+
+model ServiceRequest {
+  id        String        @id @default(uuid())
+  serviceId String
+  clientId  String
+  status    serviceStatus
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  service Service  @relation(fields: [serviceId], references: [id])
+  client  Client   @relation(fields: [clientId], references: [id])
+  project Project?
+}
+
+model Message {
+  id         String   @id @default(uuid())
+  message    String
+  senderId   String
+  receiverId String
+  read       Boolean  @default(false)
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  sender   User @relation("sender", fields: [senderId], references: [id])
+  receiver User @relation("receiver", fields: [receiverId], references: [id])
+}
