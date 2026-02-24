@@ -11,3 +11,14 @@ export const loginSchema = z.object({
     email: z.string(),
     password: z.string()
 })
+
+export const ServiceSchema = z.object({
+    name: z.string(),
+    price: z.int(),
+    description: z.string().optional()
+})
+
+export const requestSchema = z.object({
+    id: z.string(),
+    status: z.enum(["REJECTED", "ACCEPTED"])
+})

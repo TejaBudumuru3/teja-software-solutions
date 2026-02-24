@@ -3,7 +3,7 @@ import { comparePassword } from "@/app/lib/hash";
 import { loginSchema } from "@/app/lib/schemaTypes";
 import { prisma } from "@/prisma/client";
 import { NextRequest, NextResponse } from "next/server";
-import { middleware } from "@/app/middleware";
+import { middleware } from "@/middleware";
 
 export async function POST(req: NextRequest) {
     const data = await req.json();
@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
     )
     const payload = {id: user.id, role: user.role, email: user.email}
 
-    const token = signToken(payload)
+    const token = await signToken(payload)
 
     const response = NextResponse.json(
        { message: "Login successful",

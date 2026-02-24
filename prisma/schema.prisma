@@ -51,10 +51,10 @@ model Client {
   id      String @id @default(uuid())
   name    String
   user_id String @unique
-  phone   String
-  company String
+  phone   String?
+  company String?
 
-  user       User             @relation(fields: [user_id], references: [id])
+  user       User             @relation(fields: [user_id], references: [id], onDelete: Cascade)
   projects   Project[]
   serviceReq ServiceRequest[]
 }
@@ -63,10 +63,10 @@ model Employee {
   id         String   @id @default(uuid())
   name       String
   user_id    String   @unique
-  phone      String
+  phone      String?
   joinedDate DateTime @default(now()) @map("joined_date")
 
-  user             User              @relation(fields: [user_id], references: [id])
+  user             User              @relation(fields: [user_id], references: [id], onDelete: Cascade)
   assignedProjects AssignedProject[]
 }
 
@@ -99,7 +99,8 @@ model AssignedProject {
 model Service {
   id          String   @id @default(uuid())
   name        String
-  description String
+  description String?
+  price       Int
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
@@ -110,7 +111,7 @@ model ServiceRequest {
   id        String        @id @default(uuid())
   serviceId String
   clientId  String
-  status    serviceStatus
+  status    serviceStatus @default(PENDING)
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -129,6 +130,6 @@ model Message {
   createdAt  DateTime @default(now()) @map("created_at")
   updatedAt  DateTime @updatedAt @map("updated_at")
 
-  sender   User @relation("sender", fields: [senderId], references: [id])
-  receiver User @relation("receiver", fields: [receiverId], references: [id])
+  sender   User @relation("sender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver User @relation("receiver", fields: [receiverId], references: [id], onDelete: Cascade)
 }

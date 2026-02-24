@@ -14,7 +14,7 @@ export default function LoginPage(){
         e.preventDefault();
 
         setError("")
-        setLoad(false)
+        setLoad(true)
 
         try{
             const res = await fetch("/api/auth/login",{
