@@ -1,4 +1,4 @@
-import Button from "./Button";
+import Button from "./ui/Button";
 
 interface SidebarLink { label: string; view: string }
 interface SidebarProps {

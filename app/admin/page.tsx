@@ -4,7 +4,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
-import SideBar from "../components/ui/Sidebar";
+import SideBar from "../components/Sidebar";
+import Profile from "../components/Profile";
 
 type User= {
     id: string;
@@ -220,61 +221,61 @@ function UsersList(){
 
 }
 
-function ProfilePage(){
-    const [name, setName] = useState("");
-    const [password, setPassword] = useState("");
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState("");
+// function ProfilePage(){
+//     const [name, setName] = useState("");
+//     const [password, setPassword] = useState("");
+//     const [loading, setLoading] = useState(false);
+//     const [error, setError] = useState("");
 
-    useEffect(()=>{
-        fetch('/api/profile')
-        .then(r=>r.json())
-        .then(d=>{
-            if(d.name) setName(d.name);
-        });
-    },[]);
+//     useEffect(()=>{
+//         fetch('/api/profile')
+//         .then(r=>r.json())
+//         .then(d=>{
+//             if(d.name) setName(d.name);
+//         });
+//     },[]);
 
-    const handleSubmit = async (e:React.FormEvent)=>{
-        e.preventDefault();
-        setLoading(true); setError("");
-        try{
-            const res = await fetch('/api/profile',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,password})});
-            if(!res.ok){
-                const data = await res.json();
-                setError(data.message||'Failed');
-            } else {
-                // maybe show toast
-            }
-        }catch(err){setError('Something went wrong');}
-        setLoading(false);
-    };
+//     const handleSubmit = async (e:React.FormEvent)=>{
+//         e.preventDefault();
+//         setLoading(true); setError("");
+//         try{
+//             const res = await fetch('/api/profile',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,password})});
+//             if(!res.ok){
+//                 const data = await res.json();
+//                 setError(data.message||'Failed');
+//             } else {
+//                 // maybe show toast
+//             }
+//         }catch(err){setError('Something went wrong');}
+//         setLoading(false);
+//     };
 
-    return (
-        <div className="max-w-md">
-            <h2 className="text-xl font-bold mb-4">Your Profile</h2>
-            {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <Input
-                    name="name"
-                    label="Name"
-                    value={name}
-                    onChange={e=>setName(e.target.value)}
-                />
-                <div>
-                    <Input
-                        type="password"
-                        name="password"
-                        label="Password"
-                        value={password}
-                        onChange={e=>setPassword(e.target.value)}
-                    />
-                    <p className="text-xs text-gray-500 mt-1">leave blank to keep current password</p>
-                </div>
-                <Button type="submit" loading={loading} width="auto">Save Changes</Button>
-            </form>
-        </div>
-    );
-}
+//     return (
+//         <div className="max-w-md">
+//             <h2 className="text-xl font-bold mb-4">Your Profile</h2>
+//             {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
+//             <form onSubmit={handleSubmit} className="space-y-4">
+//                 <Input
+//                     name="name"
+//                     label="Name"
+//                     value={name}
+//                     onChange={e=>setName(e.target.value)}
+//                 />
+//                 <div>
+//                     <Input
+//                         type="password"
+//                         name="password"
+//                         label="Password"
+//                         value={password}
+//                         onChange={e=>setPassword(e.target.value)}
+//                     />
+//                     <p className="text-xs text-gray-500 mt-1">leave blank to keep current password</p>
+//                 </div>
+//                 <Button type="submit" loading={loading} width="auto">Save Changes</Button>
+//             </form>
+//         </div>
+//     );
+// }
 
 function Dashboard(){
     const [stats, setStats] = useState<{employeeCount:number,clientCount:number,projectCount:number,deliveredCount:number} | null>(null);
@@ -1116,7 +1117,7 @@ export default function AdminPage(){
         <div className="flex min-h-screen bg-gray-50">
           
             <SideBar links={links} title="ADMIN PAGE" active={active} setActive={setActive} logout={handleLogout} />
-            <main className="flex-1 p-10"> 
+            <main className="flex-1 text-gray-700 p-10"> 
                 {
                     active === "dashboard" && (
                         <div>
@@ -1133,7 +1134,7 @@ export default function AdminPage(){
                     { active === "clients"  && <ClientsList/>}
                     { active === "projects" && <ProjectsList />}
                     { active === "requests" && <Requests/>}
-                    { active === "profile" && <ProfilePage/>}
+                    { active === "profile" && <Profile/>}
             </main>
         </div>
     );

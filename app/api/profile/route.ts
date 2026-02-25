@@ -19,13 +19,13 @@ export async function GET(req: NextRequest) {
   const employeesArr = (user.employee as any[] | undefined) || [];
   const clientsArr = (user.client as any[] | undefined) || [];
   const nameVal =
-    employeesArr[0]?.name || clientsArr[0]?.name || undefined;
+    employeesArr[0] || clientsArr[0] || undefined;
 
   return NextResponse.json({
     id: user.id,
     email: user.email,
     role: user.role,
-    name: nameVal,
+    users: nameVal,
   });
 }
 

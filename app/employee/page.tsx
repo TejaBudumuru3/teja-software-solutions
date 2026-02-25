@@ -1,10 +1,11 @@
 "use client"
 import { useState, useEffect } from "react";
-import SideBar from "../components/ui/Sidebar";
+import SideBar from "../components/Sidebar";
 import { useRouter } from "next/navigation";
 import Input from "../components/ui/Input";
 import  Button from "../components/ui/Button";
 import { Toaster, toast } from 'sonner';
+import Profile from "../components/Profile";
 
 interface Project {
   id: string;
@@ -178,59 +179,59 @@ function Projects() {
   );
 }
 
-function Profile() {
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
-  const [phone, setPhone] = useState("")
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+// function Profile() {
+//   const [name, setName] = useState("");
+//   const [password, setPassword] = useState("");
+//   const [phone, setPhone] = useState("")
+//   const [loading, setLoading] = useState(false);
+//   const [error, setError] = useState("");
 
-  useEffect(() => {
-    fetch('/api/profile')
-      .then((r) => r.json())
-      .then((d) => { if (d.name) setName(d.name); if(d.phone) setPhone(d.phone) })
-      .catch(() => {});
-  }, []);
+//   useEffect(() => {
+//     fetch('/api/profile')
+//       .then((r) => r.json())
+//       .then((d) => { if (d.name) setName(d.name); if(d.phone) setPhone(d.phone) })
+//       .catch(() => {});
+//   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-    try {
-      const res = await fetch('/api/profile', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, password, phone }),
-      });
-      const d = await res.json();
-      if (!res.ok) {
-        setError(d.message || 'Failed');
-      }
-      toast.success(d.message)
-    } catch (err) {
-      setError('Something went wrong');
-      toast.error('Something went wrong');
-    } finally {
-      setLoading(false);
-    }
-  };
+//   const handleSubmit = async (e: React.FormEvent) => {
+//     e.preventDefault();
+//     setLoading(true);
+//     setError("");
+//     try {
+//       const res = await fetch('/api/profile', {
+//         method: 'PUT',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify({ name, password, phone }),
+//       });
+//       const d = await res.json();
+//       if (!res.ok) {
+//         setError(d.message || 'Failed');
+//       }
+//       toast.success(d.message)
+//     } catch (err) {
+//       setError('Something went wrong');
+//       toast.error('Something went wrong');
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
 
-  return (
-    <div className="max-w-md">
-      <h1 className="text-2xl font-bold mb-4">Your Profile</h1>
-      {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <Input label="Name" name="name" value={name} onChange={(e)=>{setName(e.target.value)}}/>
-        <Input label="Password" name="name" value={password} type="password" onChange={(e)=>{setPassword(e.target.value)}}/>
-        <Input label="Phone" name="name" value={phone} onChange={(e)=>{setPhone(e.target.value)}}/>
-        <div className="text-sm text-gray-500">Type which field you want to update only</div>
-        <Button width="sm" type="submit">
-            Update
-        </Button>
-      </form>
-    </div>
-  );
-}
+//   return (
+//     <div className="max-w-md">
+//       <h1 className="text-2xl font-bold mb-4">Your Profile</h1>
+//       {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
+//       <form onSubmit={handleSubmit} className="space-y-4">
+//         <Input label="Name" name="name" value={name} onChange={(e)=>{setName(e.target.value)}}/>
+//         <Input label="Password" name="name" value={password} type="password" onChange={(e)=>{setPassword(e.target.value)}}/>
+//         <Input label="Phone" name="name" value={phone} onChange={(e)=>{setPhone(e.target.value)}}/>
+//         <div className="text-sm text-gray-500">Type which field you want to update only</div>
+//         <Button width="sm" type="submit">
+//             Update
+//         </Button>
+//       </form>
+//     </div>
+//   );
+// }
 
 const page = () => {
   const [active, setActive] = useState<View>("dashboard");
@@ -259,7 +260,7 @@ const page = () => {
       <main className="flex-1 text-gray-600 p-10">
         {active === "dashboard" && <Dashboard />}
         {active === "projects" && <Projects />}
-        {active === "profile" && <Profile />}
+        {active === "profile" && <Profile employee={true} />}
       </main>
     </div>
   );
