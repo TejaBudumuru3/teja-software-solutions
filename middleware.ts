@@ -23,6 +23,8 @@ export async function middleware(req: NextRequest) {
   const role = payload.role.toLowerCase(); // "admin" | "employee" | "client"
 
   if (pathname.startsWith("/api")) {
+
+    if(pathname.startsWith("/api/profile")) return NextResponse.next()
     if (!pathname.startsWith(`/api/${role}`)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }

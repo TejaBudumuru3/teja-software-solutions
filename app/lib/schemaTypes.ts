@@ -22,3 +22,15 @@ export const requestSchema = z.object({
     id: z.string(),
     status: z.enum(["REJECTED", "ACCEPTED"])
 })
+
+export const profileSchema = z.object({
+    name: z.string().optional(),
+    password: z.string().optional(),
+    phone: z.string().optional(),
+    company: z.string().optional()
+})
+
+export const projectUpdateSchema = z.object({
+    id: z.string(),
+    status: z.enum(["PLANNING","DEVELOPMENT","DEPLOYMENT", "TESTING", "DELIVERED"])
+})

@@ -1,16 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyToken } from "@/app/lib/auth";
+import { getCurrentUser } from "@/app/lib/auth";
 import { hashpassword } from "@/app/lib/hash";
 import { prisma } from "@/prisma/client";
+import { profileSchema } from "@/app/lib/schemaTypes";
 
 export async function GET(req: NextRequest) {
-  const token = req.cookies.get("token")?.value;
-  if (!token) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-
-  const verified = await verifyToken(token);
+  const verified = await getCurrentUser(req);
   if (!verified) return NextResponse.json({ message: "invalid token" }, { status: 401 });
 
-  // fetch extra info for employee/client
   const include: any = {};
   if (verified.role === "EMPLOYEE") include.employee = true;
   if (verified.role === "CLIENT") include.client = true;
@@ -33,13 +30,20 @@ export async function GET(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
-  const token = req.cookies.get("token")?.value;
-  if (!token) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-
-  const verified = await verifyToken(token);
+  const verified = await getCurrentUser(req);
   if (!verified) return NextResponse.json({ message: "invalid token" }, { status: 401 });
 
-  const { name, password } = await req.json();
+  const payload = await req.json();
+  const dataSafe = profileSchema.safeParse(payload);
+
+  if(!dataSafe.success){
+    return NextResponse.json( 
+      { message: "invalid data"},
+      {status: 400}
+    )
+  }
+
+  const { name, password, phone, company } = dataSafe.data; 
   const data: any = {};
   if (password) {
     data.password = await hashpassword(password);
@@ -51,10 +55,10 @@ export async function PUT(req: NextRequest) {
     // update name in related profile if provided
     if (name) {
       if (verified.role === "EMPLOYEE") {
-        await prisma.employee.update({ where: { user_id: verified.id }, data: { name } });
+        await prisma.employee.update({ where: { user_id: verified.id }, data: { name, phone } });
       }
       if (verified.role === "CLIENT") {
-        await prisma.client.update({ where: { user_id: verified.id }, data: { name } });
+        await prisma.client.update({ where: { user_id: verified.id }, data: { name, phone, company } });
       }
     }
 

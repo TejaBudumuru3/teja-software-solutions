@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
+import SideBar from "../components/ui/Sidebar";
 
 type User= {
     id: string;
@@ -12,61 +13,7 @@ type User= {
 }
 type View = "dashboard" | "register" | "users" | "servies" | "projects" | "clients" | "requests" | "profile";
 
-function SideBar({
-    active,
-    setActive,
-    logout,
-}: {
-    active: View;
-    setActive: (v: View)=> void;
-    logout: ()=> void;
-}){
-    const links: { label: string, view: View}[] = [
-        { label: "Dashboard", view: "dashboard"},
-        { label: "Profile", view: "profile"},
-        { label: "Register", view: "register" },
-        // previous Employees/Clients links removed to declutter
-        { label: "Projects", view: "projects"},
-        { label: "Services", view: "servies"},
-        { label: "Requests", view: "requests"}
-    ]
 
-
-    return(
-        <aside className="w-60 max-h-screen h-screen sticky top-0 bg-gray-900 text-white flex flex-col justify-between p-6">
-            <div className="h-full flex flex-col justify-between">
-                <h2 className="text-xl font-bold mb-8">Admin Panel</h2>
-                <div className="flex flex-col justify-between h-full">
-                <nav className="flex flex-col gap-2">
-                    {links.map((link)=>(
-                        <button
-                            key={link.view}
-                            onClick={()=>setActive(link.view)}
-                            className={`text-left px-4 py-2 rounded-lg text-sm font-medium transition
-                                ${active === link.view
-                                ? "bg-blue-600 text-white"
-                                : "hover:bg-gray-700 text-gray-300"
-                                }`}
-                            >
-                                {link.label}
-                            </button>
-                    ))}
-                </nav>
-
-                {/* profile link moved to nav above */}
-                <Button
-                    variant="danger"
-                    width="full"
-                    padding="2"
-                    onClick={()=>logout()}
-                >
-                    Logout
-                </Button>
-                </div>
-            </div>
-        </aside>
-    )
-}
 
 function RegisterForm(){
     const [form, setForm] = useState({ email: "", password: "", role: "EMPLOYEE" });
@@ -280,7 +227,7 @@ function ProfilePage(){
     const [error, setError] = useState("");
 
     useEffect(()=>{
-        fetch('/api/admin/profile')
+        fetch('/api/profile')
         .then(r=>r.json())
         .then(d=>{
             if(d.name) setName(d.name);
@@ -291,7 +238,7 @@ function ProfilePage(){
         e.preventDefault();
         setLoading(true); setError("");
         try{
-            const res = await fetch('/api/admin/profile',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,password})});
+            const res = await fetch('/api/profile',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,password})});
             if(!res.ok){
                 const data = await res.json();
                 setError(data.message||'Failed');
@@ -676,7 +623,6 @@ function StatusApproval({ request, onUpdated }: { request: any; onUpdated: () =>
   )
 }
 
-// ---------------- projects UI ----------------
 
 function ProjectEmployeesModal({
     project,
@@ -883,16 +829,6 @@ function ProjectsList(){
 
 
 function Requests(){
-    // type Request = {
-    //     id: string;
-    //     status: 'PENDING' | 'ACCEPTED' | "REJECTED";
-    //     service: string;
-    //     price: number;
-    //     description: string | null;
-    //     createdAt: Date;
-    //     clientName: string;
-    //     company: string | null;
-    // }
 
     async function fetchRequests(){
         setLoad(true)
@@ -1159,7 +1095,7 @@ function AssignModal({ request, onClose, onProjectCreated }: { request: any; onC
 }
 export default function AdminPage(){
     const router = useRouter()
-    const [active, setActive] = useState<View>("dashboard");
+    const [active, setActive] = useState<string>("dashboard");
 
     async function handleLogout(){
         await fetch("/api/auth/logout", {method: "DELETE"})
@@ -1167,15 +1103,24 @@ export default function AdminPage(){
 
         
     }
+    const links = [
+        { label: "Dashboard", view: "dashboard"},
+        { label: "Profile", view: "profile"},
+        { label: "Register", view: "register" },
+        { label: "Projects", view: "projects"},
+        { label: "Services", view: "servies"},
+        { label: "Requests", view: "requests"}
+        ]
 
     return(
         <div className="flex min-h-screen bg-gray-50">
-            <SideBar active={active} setActive={setActive} logout={handleLogout} />
+          
+            <SideBar links={links} title="ADMIN PAGE" active={active} setActive={setActive} logout={handleLogout} />
             <main className="flex-1 p-10"> 
                 {
                     active === "dashboard" && (
                         <div>
-                            <h2 className="text-xl font-bold text-gray-800 mb-2">Welcome, Admin 👋</h2>
+                            <h2 className="text-xl font-bold text-gray-800 mb-2">Welcome, Admin</h2>
                             <p className="text-gray-500 text-sm">Use the sidebar to manage users.</p>
                             <Dashboard/>
                         </div>

@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken'
 
 import { SignJWT, jwtVerify } from "jose";
+import { NextRequest } from 'next/server';
 
 export type JwTPayload = {
     id: string;
@@ -29,4 +30,10 @@ export async function verifyToken(token: string): Promise<JwTPayload | null> {
         console.log(`[JWT] Error verifying token: ${err}`)
         return null
     }
+}
+
+export async function getCurrentUser(req: NextRequest){
+    const token = req.cookies.get("token")?.value;
+    if(!token) return null;
+    return await verifyToken(token)
 }
