@@ -1,89 +1,128 @@
-# Teja Software Solutions
+﻿# Teja Software Solutions
 
-Lightweight Next.js + Prisma app for client/team collaboration and messaging.
+A full-stack web application for managing clients, employees, projects, services, and internal messaging — with role-based access for Admins, Employees, and Clients.
 
-## Overview
+---
 
-- Two-pane LinkedIn-style messaging UI with role-aware contacts (Admin / Employee / Client).
-- Project previews, service requests, and role-based views.
-- Built with Next.js (app router), Tailwind CSS utilities, and Prisma for Postgres.
+## Tech stack
 
-## Features
+| Layer | Technology |
+|---|---|
+| Framework | Next.js 14 (App Router) |
+| Database ORM | Prisma |
+| Database | PostgreSQL (Neon) |
+| Styling | Tailwind CSS |
+| Auth | JWT (HTTP-only cookies) |
+| Language | TypeScript |
 
-- Role-aware conversations and contacts endpoint
-- Two-pane messaging UI (conversations + messages)
-- Project previews and simple service request handling
-- Login-only public landing page (no public registration links)
+---
 
-## Quick start
+## Getting started
 
-1. Install dependencies
+### Prerequisites
+
+- Node.js 18+
+- A PostgreSQL database (local or hosted, e.g. [Neon](https://neon.tech))
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/TejaBudumuru3/teja-software-solutions.git
+cd teja-software-solutions
+```
+
+### 2. Install dependencies
 
 ```bash
 npm install
 ```
 
-2. Create environment variables (`.env`)
+### 3. Configure environment variables
 
-Required variables:
-
-- `DATABASE_URL` — your Postgres connection string
-- `JWT_SECRET` — secret used to sign auth tokens
-
-Example `.env` (do NOT commit):
+Create a `.env` file in the root directory:
 
 ```dotenv
-DATABASE_URL=postgresql://user:pass@host:port/dbname
-JWT_SECRET="YOUR_JWT_SECRET"
+DATABASE_URL=postgresql://user:password@host:port/dbname
+JWT_SECRET="your-secret-key"
 ```
 
-3. Prepare the database (Prisma)
+> **Never commit your `.env` file.** Add it to `.gitignore`.
+
+### 4. Set up the database
 
 ```bash
 npx prisma migrate dev --name init
 npx prisma generate
 ```
 
-4. Run the development server
+To seed initial data:
+
+```bash
+npx tsx seed.ts
+```
+
+### 5. Run the development server
 
 ```bash
 npm run dev
 ```
 
-5. Type-check (optional)
-
-```bash
-npx tsc --noEmit
-```
-
-## Project layout (important files)
-
-- `app/page.tsx` — landing page (HeroFresh + FeatureGrid)
-- `app/components/Header.tsx`, `HeroFresh.tsx`, `FeatureGrid.tsx`, `Footer.tsx` — landing UI
-- `app/components/Messages.tsx` — two-pane messaging UI
-- `app/api/*` — server routes (messages, auth, profile, etc.)
-- `prisma/schema.prisma` — Prisma schema
-
-## Notes & decisions
-
-- Public-facing registration routes/CTAs were intentionally removed from the landing (registration is admin-only).
-- Landing uses a premium white + blur aesthetic; hero image is loaded from Unsplash for the demo.
-- I removed several legacy/unused landing components (Hero variants and preview card) to keep the UI focused.
-
-## Contributing
-
-- Run the dev server and open `http://localhost:3000` to preview.
-- Keep environment secrets out of VCS. Use `.env.local` for local development.
-
-## Troubleshooting
-
-- If pages error on missing env variables, confirm `DATABASE_URL` and `JWT_SECRET` exist.
-- If Prisma client is stale, run `npx prisma generate`.
+Visit [http://localhost:3000](http://localhost:3000).
 
 ---
 
-If you'd like, I can:
-- Replace the demo Unsplash hero with an optimized `next/image` usage (recommended for production), or
-- Run a repo-wide search to remove any remaining public `/register` links.
+## Project structure
 
-Which would you like next?
+```
+app/
+ page.tsx              # Public landing page
+ login/                # Login page
+ admin/                # Admin dashboard
+ client/               # Client dashboard
+ employee/             # Employee dashboard
+ api/                  # API routes (auth, messages, projects, etc.)
+ components/           # Shared UI components
+ lib/                  # Auth helpers, schema types, utilities
+prisma/
+ schema.prisma         # Database schema
+ migrations/           # Migration history
+public/                   # Static assets
+```
+
+---
+
+## Roles and access
+
+| Role | Access |
+|---|---|
+| **Admin** | Full access — manage users, projects, clients, employees, services |
+| **Employee** | View assigned projects, message clients and admins |
+| **Client** | View own projects, submit service requests, message team |
+
+> Registration is restricted to Admins only. There is no public sign-up.
+
+---
+
+## Available scripts
+
+```bash
+npm run dev          # Start development server
+npm run build        # Production build
+npm run start        # Start production server
+npx tsc --noEmit     # Type-check without emitting files
+npx prisma studio    # Open Prisma Studio (database GUI)
+```
+
+---
+
+## Deployment
+
+1. Set environment variables on your hosting platform (Vercel, Railway, etc.).
+2. Run `npx prisma migrate deploy` to apply migrations in production.
+3. Build and start with `npm run build && npm run start`.
+
+---
+
+## License
+
+This project is private and not open for public use.
