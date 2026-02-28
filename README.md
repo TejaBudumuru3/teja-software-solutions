@@ -109,7 +109,6 @@ public/                   # Static assets
 npm run dev          # Start development server
 npm run build        # Production build
 npm run start        # Start production server
-npx tsc --noEmit     # Type-check without emitting files
 npx prisma studio    # Open Prisma Studio (database GUI)
 ```
 
