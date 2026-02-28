@@ -15,11 +15,14 @@ export async function GET(req: NextRequest) {
   const user = await prisma.user.findUnique({ where: { id: verified.id }, include });
   if (!user) return NextResponse.json({ message: "User not found" }, { status: 404 });
 
-  // employee and client relations are arrays on User (cast to any to avoid union types)
-  const employeesArr = (user.employee as any[] | undefined) || [];
-  const clientsArr = (user.client as any[] | undefined) || [];
-  const nameVal =
-    employeesArr[0] || clientsArr[0] || undefined;
+  function extractName(rel: any): string | undefined {
+  if (!rel) return undefined;
+  if (Array.isArray(rel)) return rel[0]?.name;
+  return rel?.name;
+}
+  // const employeesArr = (user.employee as any[] | undefined) || [];
+  // const clientsArr = (user.client as any[] | undefined) || [];
+  const nameVal = extractName(user.employee) || extractName(user.client) || undefined;
 
   return NextResponse.json({
     id: user.id,

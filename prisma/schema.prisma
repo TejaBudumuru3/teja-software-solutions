@@ -41,8 +41,8 @@ model User {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  client          Client[]
-  employee        Employee[]
+  client          Client?
+  employee        Employee?
   messageReceived Message[]  @relation("receiver")
   messageSent     Message[]  @relation("sender")
 }

@@ -24,7 +24,7 @@ export async function middleware(req: NextRequest) {
 
   if (pathname.startsWith("/api")) {
 
-    if(pathname.startsWith("/api/profile")) return NextResponse.next()
+    if(pathname.startsWith("/api/profile") || pathname.startsWith("/api/messages")) return NextResponse.next()
     if (!pathname.startsWith(`/api/${role}`)) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }

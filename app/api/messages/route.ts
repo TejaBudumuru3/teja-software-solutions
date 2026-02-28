@@ -1,15 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyToken } from "@/app/lib/auth";
+import { getCurrentUser } from "@/app/lib/auth";
 import { prisma } from "@/prisma/client";
 
-async function authUser(req: NextRequest) {
-  const token = req.cookies.get("token")?.value;
-  if (!token) return null;
-  return await verifyToken(token);
-}
 
 export async function GET(req: NextRequest) {
-  const user = await authUser(req);
+  const user = await getCurrentUser(req);
   if (!user) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
   try {
@@ -18,12 +13,42 @@ export async function GET(req: NextRequest) {
         OR: [{ senderId: user.id }, { receiverId: user.id }],
       },
       include: {
-        sender: { select: { id: true, email: true } },
-        receiver: { select: { id: true, email: true } },
+        sender: {
+          select:{
+            id: true,
+            email: true,
+            employee: {select : {name: true}},
+            client: { select: {name: true}},
+            
+          }
+        },
+
+        receiver: {
+          select: {
+            id: true,
+            email: true,
+            employee: { select: { name: true }},
+            client: { select: {name: true}}
+          }
+        }
       },
       orderBy: { createdAt: "desc" },
     });
-    return NextResponse.json({ data: msgs }, { status: 200 });
+
+    const conversations = msgs.reduce((acc, msg) => {
+      const partner = msg.senderId === user.id ? msg.receiver : msg.sender;
+
+      const idx = acc.findIndex(c => c.partner.id === partner.id);
+      if (idx === -1) {
+        acc.push({ partner, conversation: [msg] });
+      } else {
+        acc[idx].conversation.push(msg);
+      }
+      return acc;
+    }, [] as Array<{ partner: typeof msgs[0]["sender"]; conversation: typeof msgs }>);
+
+    return NextResponse.json({ data: conversations }, { status: 200 });
+    // return NextResponse.json({ data: msgs }, { status: 200 });
   } catch (err) {
     console.log("[MESSAGES GET]", err);
     return NextResponse.json({ message: "Failed to load messages" }, { status: 500 });
@@ -31,7 +56,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const user = await authUser(req);
+  const user = await getCurrentUser(req);
   if (!user) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
   const { receiverId, message } = await req.json();
@@ -50,7 +75,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
-  const user = await authUser(req);
+  const user = await getCurrentUser(req);
   if (!user) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   const { id, read } = await req.json();
   if (!id || typeof read !== "boolean") {

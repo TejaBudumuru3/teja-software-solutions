@@ -8,6 +8,7 @@ type ButtonProps = {
   disabled?: boolean;
   width?: "sm" | "xs" | "xl" | "full" | "md" | "lg" | "auto" | "2xl" | "2xs" | "3xs";
   padding?: string;
+  rounded?: "full" | "lg" | "sm"
 };
 
 export default function Button({
@@ -19,7 +20,8 @@ export default function Button({
   variant = "primary",
   disabled,
   width = "full",
-  padding = "2"
+  padding = "2",
+  rounded = "lg"
 }: ButtonProps) {
   const styles = {
     primary: "bg-blue-600 hover:bg-blue-700 text-white",
@@ -32,7 +34,7 @@ export default function Button({
       type={type}
       onClick={onClick}
       disabled={loading || disabled}
-      className={`w-${width} font-medium py-2 px-${padding} rounded-lg text-sm transition
+      className={`w-${width} font-medium py-2 px-${padding} rounded-${rounded} text-sm transition
         disabled:opacity-50 disabled:cursor-not-allowed
         ${styles[variant]}`}
     >

@@ -6,6 +6,7 @@ import Input from "../components/ui/Input";
 import Button from "../components/ui/Button";
 import SideBar from "../components/Sidebar";
 import Profile from "../components/Profile";
+import Messages from "../components/Messages";
 
 type User= {
     id: string;
@@ -1110,7 +1111,8 @@ export default function AdminPage(){
         { label: "Register", view: "register" },
         { label: "Projects", view: "projects"},
         { label: "Services", view: "servies"},
-        { label: "Requests", view: "requests"}
+        { label: "Requests", view: "requests"},
+        {label: "Messages", view: "messages"}
         ]
 
     return(
@@ -1135,6 +1137,7 @@ export default function AdminPage(){
                     { active === "projects" && <ProjectsList />}
                     { active === "requests" && <Requests/>}
                     { active === "profile" && <Profile/>}
+                    { active === "messages" && <Messages/>}
             </main>
         </div>
     );

@@ -6,6 +6,7 @@ import Input from "../components/ui/Input";
 import  Button from "../components/ui/Button";
 import { Toaster, toast } from 'sonner';
 import Profile from "../components/Profile";
+import Messages from "../components/Messages";
 
 interface Project {
   id: string;
@@ -14,7 +15,7 @@ interface Project {
   client?: { name: string };
 }
 
-type View = "dashboard" | "profile" | "projects";
+type View = "dashboard" | "profile" | "projects" | "messages";
 
 function Dashboard() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -240,6 +241,7 @@ const page = () => {
     { label: "Dashboard", view: "dashboard" },
     { label: "Profile", view: "profile" },
     { label: "Projects", view: "projects" },
+    { label: "Messages", view: "messages"}
   ];
 
   async function handleLogout() {
@@ -261,6 +263,7 @@ const page = () => {
         {active === "dashboard" && <Dashboard />}
         {active === "projects" && <Projects />}
         {active === "profile" && <Profile employee={true} />}
+        { active === "messages" && <Messages/>}
       </main>
     </div>
   );

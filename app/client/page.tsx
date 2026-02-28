@@ -7,8 +7,9 @@ import { toast } from "sonner"
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Dropdown from '../components/ui/Dropdown';
+import Messages from '../components/Messages';
 
-type View = "dashboard" | "profile" | "requests";
+type View = "dashboard" | "profile" | "requests" | "messages";
 
 function RequestForm({onClose}: {onClose: ()=> void}){
     const [service, setServices] = useState<any[]>([]);
@@ -229,7 +230,8 @@ const page = () => {
     const link = [
         {label:"Dashboard", view: "dashboard"},
         { label: "Requests", view: "requests" },
-        { label: "Profile", view: "profile"}
+        { label: "Profile", view: "profile"},
+        { label: "Messages", view: "messages" }
     ]
 
     async function handleLogout() {
@@ -250,6 +252,7 @@ const page = () => {
             { active === "profile" && <Profile client={true}/>}
             { active === "requests" && <Requests/>}
             { active === "dashboard" && <Dashboard/>}
+            { active === "messages" && <Messages/>}
         </main>     
     </div>
   )
